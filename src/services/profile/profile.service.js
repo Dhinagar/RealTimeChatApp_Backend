@@ -39,7 +39,11 @@ async function getProfileData(username) {
 
 async function updateProfileData(username, updatedDetails) {
   try {
-    const [err, Profile] = await resolvePromise(User.findOneAndDelete({userName:username}, updatedDetails, { new: true }));
+    const [err, Profile] = await resolvePromise(
+      User.findOneAndUpdate({ userName: username }, updatedDetails, {
+        new: true,
+      })
+    );
 
     if (err) {
       return {
@@ -78,10 +82,8 @@ async function updateProfileData(username, updatedDetails) {
   }
 }
 
-
 async function deactivateProfile(username, requestingUsername) {
   try {
-    
     if (username !== requestingUsername) {
       return {
         code: 403,
@@ -92,7 +94,13 @@ async function deactivateProfile(username, requestingUsername) {
       };
     }
 
-    const [err, profile] = await resolvePromise(User.findOneAndDelete({userName:username}, { isActive: false }, { new: true }));
+    const [err, profile] = await resolvePromise(
+      User.findOneAndUpdate(
+        { userName: username },
+        { isActive: false, status: "offline" },
+        { new: true }
+      )
+    );
 
     if (err) {
       return {
@@ -117,7 +125,11 @@ async function deactivateProfile(username, requestingUsername) {
 
     return {
       code: 200,
-      data: { success: true, message: "Your Profile deactivated successfully" },
+      data: {
+        success: true,
+        message: "Your Profile deactivated successfully",
+        user: profile,
+      },
     };
   } catch (error) {
     return {
@@ -131,4 +143,4 @@ async function deactivateProfile(username, requestingUsername) {
   }
 }
 
-module.exports = { getProfileData,updateProfileData ,deactivateProfile};
+module.exports = { getProfileData, updateProfileData, deactivateProfile };

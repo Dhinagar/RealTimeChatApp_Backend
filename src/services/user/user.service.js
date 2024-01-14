@@ -7,6 +7,19 @@ const jwt = require('jsonwebtoken');
 
 async function registerUser(userDetails) {
   try {
+    
+    const [errExitsUser, exitsUser] = await resolvePromise(
+      User.findOne({ userName: userDetails.userName })
+    );
+    if(exitsUser){
+      return {
+        code: 409,
+        data: {
+          success: false,
+          message: "Registration failed, Username is already exits.",
+        },
+      };
+    }
     const user = new User(userDetails);
     const [err, success] = await resolvePromise(user.save());
     if (err) {
@@ -38,7 +51,7 @@ async function registerUser(userDetails) {
 async function loginUser(username, password) {
   try {
     const [err, user] = await resolvePromise(
-      User.findOne({ userName: username })
+      User.findOne({ userName: username, isActive: true })
     );
     const [errFriendStatus, friendStatus] = await resolvePromise(
       FriendList.findOne({ friendUser: username })
@@ -80,7 +93,54 @@ async function loginUser(username, password) {
       await friendStatus.save();
     }
 
-    return { code: 200, data: { success: true, token: generateToken(user) } };
+    return { code: 200, data: { success: true, token: generateToken(user),user } };
+  } catch (error) {
+    return {
+      code: 401,
+      data: {
+        success: false,
+        message: "Authentication failed",
+        error: error.message,
+      },
+    };
+  }
+}
+
+async function logoutUser(username) {
+  try {
+    const [err, user] = await resolvePromise(
+      User.findOne({ userName: username })
+    );
+    const [errFriendStatus, friendStatus] = await resolvePromise(
+      FriendList.findOne({ friendUser: username })
+    );
+    if (err) {
+      throw err;
+    }
+    if (errFriendStatus) {
+      throw err;
+    }
+    if (!user) {
+      return {
+        code: 404,
+        data: {
+          success: false,
+          message: "User not found.",
+        },
+      };
+    }
+
+   
+    
+    user.status = "offline";
+    await user.save();
+
+    if (friendStatus) {
+      friendStatus.statusOf_friend = "offline";
+      await friendStatus.save();
+    }
+
+    return { code: 200, data: { success: true, message: "Logged out." } };
   } catch (error) {
     return {
       code: 401,
@@ -99,33 +159,4 @@ function generateToken(user) {
   });
 }
 
-async function logout(username) {
-  try {
-    const [err, user] = await resolvePromise(
-      User.findOne({ userName: username })
-    );
-
-    if (err || !user) {
-      return {
-        code: 404,
-        data: {
-          success: false,
-          message: "User not found.",
-        },
-      };
-    }
-
-    // Update status to 'offline'
-    user.status = "offline";
-    await user.save();
-  } catch (error) {
-    return {
-      code: 401,
-      data: {
-        success: false,
-        message: "logout failed.",
-      },
-    };
-  }
-}
-module.exports = { registerUser, loginUser, logout };
+module.exports = { registerUser, loginUser, logoutUser };
