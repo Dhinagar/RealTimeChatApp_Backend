@@ -1,10 +1,14 @@
-const { registerUser, loginUser,logoutUser } = require("../services/user/user.service");
+const {
+  registerUser,
+  loginUser,
+  logoutUser,
+} = require("../services/user/user.service");
 
 const registerUserController = async (req, res) => {
   const { username, name, password, email, age } = req.body;
 
   const userDetails = {
-    userName:username,
+    userName: username,
     name,
     password,
     email,
@@ -12,7 +16,7 @@ const registerUserController = async (req, res) => {
     created_at: new Date(),
     updated_at: new Date(),
     last_loggedIn: null,
-    status:'offline'
+    status: "offline",
   };
   const result = await registerUser(userDetails);
   res.status(result.code).json(result.data);
@@ -30,5 +34,5 @@ const logoutUserController = async (req, res) => {
 module.exports = {
   registerUserController,
   loginUserController,
-  logoutUserController
+  logoutUserController,
 };

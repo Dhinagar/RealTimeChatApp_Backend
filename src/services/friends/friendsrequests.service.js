@@ -156,7 +156,7 @@ async function declineFriendRequest(sourceUserName, destinationUserName) {
       code: 200,
       data: {
         success: true,
-        message: "Accepted successfully.",
+        message: "Declined successfully.",
       },
     };
   } catch (error) {

@@ -1,8 +1,13 @@
-const { getProfileData ,updateProfileData, deactivateProfile} = require("../services/profile/profile.service");
+const { getProfileData ,updateProfileData, deactivateProfile,getAllProfileData} = require("../services/profile/profile.service");
 
 const getprofileController = async (req, res) => {
   const { username } = req.query;
   const result = await getProfileData(username);
+  res.status(result.code).json(result.data);
+};
+const getAllprofileController = async (req, res) => {
+  const username = req.params.username;
+  const result = await getAllProfileData(username);
   res.status(result.code).json(result.data);
 };
 const updateProfileController = async (req, res) => {
@@ -17,4 +22,4 @@ const deactivateProfileController = async (req,res)=>{
   const result = await deactivateProfile(username, requestingUsername);
   res.status(result.code).json(result.data);
 }
-module.exports = { getprofileController, updateProfileController,deactivateProfileController };
+module.exports = { getprofileController, updateProfileController,deactivateProfileController, getAllprofileController };
