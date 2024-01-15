@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon server.js",
     "test": "jest",
-    "start": "nodemon server.js"
+    "test:watch": "jest --watchAll"
   },
   "author": "",
   "license": "ISC",
@@ -21,6 +22,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
     "nodemon": "^3.0.2"
   }
 }
