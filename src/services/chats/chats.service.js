@@ -21,8 +21,8 @@ async function createChatroom(sourceUserName, destinationUserName) {
         code: 200,
         data: {
           success: true,
-          message: `You can chat now with ${destinationUserName}.`,
-          chatRoom: isExits,
+          message: `You have Already chat room, You can chat now with ${destinationUserName}.`,
+          chatRoom: isExits[0],
         },
       };
     }
